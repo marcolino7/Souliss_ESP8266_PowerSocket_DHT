@@ -10,11 +10,13 @@
         
 ***************************************************************************/
 
+//#define USE_DHT
+
 // Configure the framework
-#include "bconf/MCU_ESP8266.h"              // Load the code directly on the ESP8266
+#include "souliss/bconf/MCU_ESP8266.h"              // Load the code directly on the ESP8266
 
 // **** Define the WiFi name and password ****
-#include "C:\Users\Administrator\Documents\Privati\ArduinoWiFiInclude\wifi.h"
+#include "D:\__User\Administrator\Documents\Privati\ArduinoWiFiInclude\wifi.h"
 //To avoide to share my wifi credentials on git, I included them in external file
 //To setup your credentials remove my include, un-comment below 3 lines and fill with
 //Yours wifi credentials
@@ -26,22 +28,26 @@
 #include <ESP8266WiFi.h>
 #include <EEPROM.h>
 #include "Souliss.h"
-#include "DHT-sensor-library\dht.h"
+
+#ifdef USE_DHT
+	#include "DHT-sensor-library\dht.h"
+#endif
 
 #define VNET_DEBUG_INSKETCH
 #define VNET_DEBUG  		0
 
 // Define the network configuration according to your router settings
-uint8_t ip_address[4]  = {192, 168, 1, 131};
+uint8_t ip_address[4]  = {192, 168, 1, 133};
 uint8_t subnet_mask[4] = {255, 255, 255, 0};
 uint8_t ip_gateway[4]  = {192, 168, 1, 1};
 
 
 // This identify the number of the LED logic
 #define POWER_SOCKET    0
-#define DHT_TEMP		1
-#define DHT_HUMI		3
-         
+#ifdef USE_DHT
+	#define DHT_TEMP		1
+	#define DHT_HUMI		3
+#endif     
 // **** Define here the right pin for your ESP module **** 
 #define	PIN_RELE			5
 #define PIN_BUTTON			0
@@ -49,9 +55,11 @@ uint8_t ip_gateway[4]  = {192, 168, 1, 1};
 #define PIN_DHT				4
 
 // Identify the sensor, in case of more than one used on the same board
-#define DHTTYPE DHT22
-DHT dht(PIN_DHT, DHTTYPE, 15);
-#define DEADBANDLOW	  0.005
+#ifdef USE_DHT
+	#define DHTTYPE DHT22
+	DHT dht(PIN_DHT, DHTTYPE, 15);
+	#define DEADBANDLOW	  0.005
+#endif
 
 //Useful Variable
 byte led_status = 0;
@@ -67,10 +75,13 @@ void setup()
     
 	// Define a T11 light logic
 	Set_SimpleLight(POWER_SOCKET);			
-	//T52 Temperatur DHT
-	Souliss_SetT52(memory_map, DHT_TEMP);
-	//T53 Umidità
-	Souliss_SetT53(memory_map, DHT_HUMI);
+
+	#ifdef USE_DHT
+		//T52 Temperatur DHT
+		Souliss_SetT52(memory_map, DHT_TEMP);
+		//T53 Umidità
+		Souliss_SetT53(memory_map, DHT_HUMI);
+	#endif
 
     pinMode(PIN_RELE, OUTPUT);				// Use pin as output
 	pinMode(PIN_BUTTON,INPUT);				// Use pin as input
@@ -126,8 +137,10 @@ void loop()
 		}
 		
 		FAST_1110ms() {
-			Souliss_Logic_T52(memory_map, DHT_TEMP, DEADBANDLOW, &data_changed);
-			Souliss_Logic_T53(memory_map, DHT_HUMI, DEADBANDLOW, &data_changed);
+			#ifdef USE_DHT
+				Souliss_Logic_T52(memory_map, DHT_TEMP, DEADBANDLOW, &data_changed);
+				Souliss_Logic_T53(memory_map, DHT_HUMI, DEADBANDLOW, &data_changed);
+			#endif
 		}
 
         FAST_PeerComms();                                        
@@ -137,7 +150,9 @@ void loop()
 		UPDATESLOW();
 
 		SLOW_10s() {
-			DHTRead();
+			#ifdef USE_DHT
+				DHTRead();
+			#endif
 		}
 	}		
 } 
@@ -159,6 +174,7 @@ void check_if_joined() {
 	}		
 }
 
+#ifdef USE_DHT
 void DHTRead() {
 		
 		float temperature = dht.readTemperature();
@@ -167,3 +183,4 @@ void DHTRead() {
 		float humidity = dht.readHumidity();
 		Souliss_ImportAnalog(memory_map, DHT_HUMI, &humidity);
 }
+#endif
