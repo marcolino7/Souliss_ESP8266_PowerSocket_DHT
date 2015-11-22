@@ -158,7 +158,8 @@ void loop()
 				DHTRead();
 			#endif
 		}
-	}		
+	}
+	OTA_Process();
 } 
 
 //This routine check for peer is joined to Souliss Network
