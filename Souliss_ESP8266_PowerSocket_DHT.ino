@@ -26,6 +26,8 @@
 
 // Include framework code and libraries
 #include <ESP8266WiFi.h>
+#include <ESP8266mDNS.h>
+#include <WiFiUdp.h>
 #include <EEPROM.h>
 #include "Souliss.h"
 
@@ -37,7 +39,7 @@
 #define VNET_DEBUG  		0
 
 // Define the network configuration according to your router settings
-uint8_t ip_address[4]  = {192, 168, 1, 133};
+uint8_t ip_address[4]  = {192, 168, 1, 131};
 uint8_t subnet_mask[4] = {255, 255, 255, 0};
 uint8_t ip_gateway[4]  = {192, 168, 1, 1};
 
@@ -65,6 +67,8 @@ uint8_t ip_gateway[4]  = {192, 168, 1, 1};
 byte led_status = 0;
 byte joined = 0;
 U8 value_hold=0x068;
+
+OTA_Setup();
 
 void setup()
 {   
