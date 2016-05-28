@@ -11,9 +11,11 @@
 ***************************************************************************/
 
 //#define USE_DHT
+//#define HOST_NAME_INSKETCH
+//#define HOST_NAME "pwrskt02"
 
 // Configure the framework
-#include "souliss/bconf/MCU_ESP8266.h"              // Load the code directly on the ESP8266
+#include "bconf/MCU_ESP8266.h"              // Load the code directly on the ESP8266
 
 // **** Define the WiFi name and password ****
 #include "D:\__User\Administrator\Documents\Privati\ArduinoWiFiInclude\wifi.h"
@@ -28,6 +30,7 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266mDNS.h>
 #include <WiFiUdp.h>
+#include <ArduinoOTA.h>
 #include <EEPROM.h>
 #include "Souliss.h"
 
@@ -39,7 +42,7 @@
 #define VNET_DEBUG  		0
 
 // Define the network configuration according to your router settings
-uint8_t ip_address[4]  = {192, 168, 1, 131};
+uint8_t ip_address[4]  = {192, 168, 1, 132};
 uint8_t subnet_mask[4] = {255, 255, 255, 0};
 uint8_t ip_gateway[4]  = {192, 168, 1, 1};
 
@@ -68,7 +71,7 @@ byte led_status = 0;
 byte joined = 0;
 U8 value_hold=0x068;
 
-OTA_Setup();
+//OTA_Setup();
 
 void setup()
 {   
@@ -83,7 +86,7 @@ void setup()
 	#ifdef USE_DHT
 		//T52 Temperatur DHT
 		Souliss_SetT52(memory_map, DHT_TEMP);
-		//T53 Umidità
+		//T53 Umiditï¿½
 		Souliss_SetT53(memory_map, DHT_HUMI);
 	#endif
 
@@ -91,6 +94,12 @@ void setup()
 	pinMode(PIN_BUTTON,INPUT);				// Use pin as input
 	pinMode(PIN_LED, OUTPUT);				// Use pin as output
 	
+	//OTA_Init();
+	// Init the OTA
+	ArduinoOTA.setHostname("pwrskt03-camlett");
+	ArduinoOTA.begin();
+
+
 	Serial.begin(115200);
     Serial.println("Node Init");
 }
@@ -159,11 +168,12 @@ void loop()
 			#endif
 		}
 	}
-	OTA_Process();
+	// Look for a new sketch to update over the air
+	ArduinoOTA.handle();
 } 
 
 //This routine check for peer is joined to Souliss Network
-//If not blink the led every 500ms, else led is a mirror of relè status
+//If not blink the led every 500ms, else led is a mirror of relï¿½ status
 void check_if_joined() {
 	if(JoinInProgress() && joined==0){
 		joined=0;
