@@ -11,8 +11,8 @@
 ***************************************************************************/
 
 //#define USE_DHT
-//#define HOST_NAME_INSKETCH
-//#define HOST_NAME "pwrskt02"
+#define IP_ADDRESS	132
+#define HOSTNAME	"pwrskt03-camlett"
 
 // Configure the framework
 #include "bconf/MCU_ESP8266.h"              // Load the code directly on the ESP8266
@@ -42,7 +42,7 @@
 #define VNET_DEBUG  		0
 
 // Define the network configuration according to your router settings
-uint8_t ip_address[4]  = {192, 168, 1, 132};
+uint8_t ip_address[4]  = {192, 168, 1, IP_ADDRESS};
 uint8_t subnet_mask[4] = {255, 255, 255, 0};
 uint8_t ip_gateway[4]  = {192, 168, 1, 1};
 
@@ -96,7 +96,7 @@ void setup()
 	
 	//OTA_Init();
 	// Init the OTA
-	ArduinoOTA.setHostname("pwrskt03-camlett");
+	ArduinoOTA.setHostname(HOSTNAME);
 	ArduinoOTA.begin();
 
 
