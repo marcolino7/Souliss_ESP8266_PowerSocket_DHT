@@ -14,6 +14,10 @@
 #define IP_ADDRESS	132
 #define HOSTNAME	"pwrskt03-camlett"
 
+#define	VNET_RESETTIME_INSKETCH
+#define VNET_RESETTIME			0x00042F7	// ((20 Min*60)*1000)/70ms = 17143 => 42F7
+#define VNET_HARDRESET			ESP.reset()
+
 // Configure the framework
 #include "bconf/MCU_ESP8266.h"              // Load the code directly on the ESP8266
 
@@ -75,6 +79,7 @@ U8 value_hold=0x068;
 
 void setup()
 {   
+	delay((IP_ADDRESS - 128) * 5000);
     Initialize();
 
     // Connect to the WiFi network with static IP
